@@ -45,13 +45,13 @@ module.exports = function (options) {
       // Generate PKCS7 ASN.1
       const p7 = forge.pkcs7.createSignedData();
       p7.content = forge.util.createBuffer(buf.toString('binary'));
-      p7.addCertificate(options.cert);
+      p7.addCertificate(forge.pki.certificateFromPem(options.cert, null, {parseAllBytes: false}));
       (options.chain || []).forEach(cert => {
-        p7.addCertificate(cert);
+        p7.addCertificate(forge.pki.certificateFromPem(cert, null, {parseAllBytes: false}));
       });
       p7.addSigner({
         key: options.key,
-        certificate: options.cert,
+        certificate: forge.pki.certificateFromPem(options.cert, null, {parseAllBytes: false}),
         digestAlgorithm: forge.pki.oids.sha256,
         authenticatedAttributes: [
           {
